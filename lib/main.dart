@@ -21,7 +21,7 @@ class WelcomeScreen extends StatelessWidget {
     return const Scaffold(
       body: Center(
         child: Text(
-          'Welcome',
+          'Welcome Again!',
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
         ),
       ),
