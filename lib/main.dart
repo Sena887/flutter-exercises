@@ -17,6 +17,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// UI practice screen with validation and hover effects
+
 class PratikEkrani extends StatefulWidget {
   const PratikEkrani({super.key});
 
@@ -120,7 +122,8 @@ class _PratikEkraniState extends State<PratikEkrani> {
                       controller: _textController,
                       maxLines: 6, // Allows multiple lines
                       minLines: 3, // Initial heights
-                      keyboardType: TextInputType.multiline, //alt satıra geç (enter) butonu
+                      keyboardType: TextInputType
+                          .multiline, //alt satıra geç (enter) butonu
                       decoration: InputDecoration(
                         labelText: 'Metin Girin',
                         alignLabelWithHint:
@@ -162,7 +165,8 @@ class _PratikEkraniState extends State<PratikEkrani> {
                           ),
                         ),
                       ),
-                      onChanged: (val) { //value
+                      onChanged: (val) {
+                        //value
                         if (_errorMessage != null && val.trim().isNotEmpty) {
                           setState(() {
                             _errorMessage = null;
