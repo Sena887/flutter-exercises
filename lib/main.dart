@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/karsilama_ekrani.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,10 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Antigravity App',
-      home: PratikEkrani(),
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+<<<<<<< Updated upstream
     );
   }
 }
@@ -256,6 +256,10 @@ class _PratikEkraniState extends State<PratikEkrani> {
           ),
         ),
       ),
+=======
+      initialRoute: '/',
+      routes: {'/': (context) => const KarsilamaEkrani()},
+>>>>>>> Stashed changes
     );
   }
 }
