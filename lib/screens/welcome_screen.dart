@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'gunluk_yazma_ekrani.dart';
+import 'journal_writing_screen.dart';
 
-class KarsilamaEkrani extends StatelessWidget {
-  const KarsilamaEkrani({super.key});
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +91,7 @@ class KarsilamaEkrani extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const GunlukYazmaEkrani(),
+                    builder: (context) => const JournalWritingScreen(),
                   ),
                 );
               },

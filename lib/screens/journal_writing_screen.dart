@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 
-class GunlukYazmaEkrani extends StatefulWidget {
-  const GunlukYazmaEkrani({super.key});
+class JournalWritingScreen extends StatefulWidget {
+  const JournalWritingScreen({super.key});
 
   @override
-  State<GunlukYazmaEkrani> createState() => _GunlukYazmaEkraniState();
+  State<JournalWritingScreen> createState() => _JournalWritingScreenState();
 }
 
-class _GunlukYazmaEkraniState extends State<GunlukYazmaEkrani> {
-  final TextEditingController _yaziController =
+class _JournalWritingScreenState extends State<JournalWritingScreen> {
+  final TextEditingController _textController =
       TextEditingController(); //yazılan metni kaydetmek için
 
-  final int _enAzKarakter = 10; //girilecek en az karakter sayısı
-  final int _enFazlaKarakter = 500; //girilecek en fazla karakter sayısı
+  final int _minCharacters = 10; //girilecek en az karakter sayısı
+  final int _maxCharacters = 500; //girilecek en fazla karakter sayısı
 
   @override
   void dispose() {
     //memory leak ve RAM kullanımını önlemek için
-    _yaziController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
-  bool get _yaziGecerliMi {
-    final metin = _yaziController.text
+  bool get _isTextValid {
+    final text = _textController.text
         .trim(); //trim:baştaki ve sondaki boşlukları temizler
-    return metin.isNotEmpty &&
-        metin.length >= _enAzKarakter &&
-        metin.length <= _enFazlaKarakter;
+    return text.isNotEmpty &&
+        text.length >= _minCharacters &&
+        text.length <= _maxCharacters;
   }
   /*burada boşluk bırakarak metin göndermeyi engelledik,
     boş metin gönderimini engelledik,
     karakter satırının altında ve üstünde metin göndermeyi engelledik */
 
-  void _kaydet() {
+  void _saveJournal() {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text("Günlüğünüz kaydedildi!")));
@@ -41,7 +41,9 @@ class _GunlukYazmaEkraniState extends State<GunlukYazmaEkrani> {
 
   @override
   Widget build(BuildContext context) {
-    int anlikKarakterSayisi = _yaziController.text.trim().length;
+    int currentLength = _textController.text
+        .trim()
+        .length; //anlık karakter sayısı
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -51,9 +53,9 @@ class _GunlukYazmaEkraniState extends State<GunlukYazmaEkrani> {
         foregroundColor: const Color(0xFF47309B),
         actions: [
           IconButton(
-            onPressed: _yaziGecerliMi ? _kaydet : null,
+            onPressed: _isTextValid ? _saveJournal : null,
             icon: const Icon(Icons.check, size: 28),
-            color: _yaziGecerliMi
+            color: _isTextValid
                 ? const Color(0xFF47309B)
                 : Colors.grey.shade400,
           ),
@@ -86,11 +88,11 @@ class _GunlukYazmaEkraniState extends State<GunlukYazmaEkrani> {
             const Divider(height: 30, thickness: 1),
 
             // 10 karakterden azsa
-            if (anlikKarakterSayisi > 0 && anlikKarakterSayisi < _enAzKarakter)
+            if (currentLength > 0 && currentLength < _minCharacters)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Text(
-                  "Kaydetmek için en az $_enAzKarakter girmelisiniz",
+                  "Kaydetmek için en az $_minCharacters girmelisiniz",
                   style: const TextStyle(
                     color: Colors.red,
                     fontSize: 14,
@@ -99,11 +101,11 @@ class _GunlukYazmaEkraniState extends State<GunlukYazmaEkrani> {
                 ),
               )
             // 500 karakter sınırı aşılmışsa
-            else if (anlikKarakterSayisi > _enFazlaKarakter)
+            else if (currentLength > _maxCharacters)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Text(
-                  "En fazla $_enFazlaKarakter girebilirsiniz",
+                  "En fazla $_maxCharacters girebilirsiniz",
                   style: const TextStyle(
                     color: Colors.red,
                     fontSize: 14,
@@ -115,7 +117,7 @@ class _GunlukYazmaEkraniState extends State<GunlukYazmaEkrani> {
             // Metin giriş alanı
             Expanded(
               child: TextField(
-                controller: _yaziController,
+                controller: _textController,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 style: const TextStyle(

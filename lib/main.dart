@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/karsilama_ekrani.dart';
+import 'screens/welcome_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
-      routes: {'/': (context) => const KarsilamaEkrani()},
+      routes: {'/': (context) => const WelcomeScreen()},
     );
   }
 }
