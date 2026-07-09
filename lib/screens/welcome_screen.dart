@@ -6,15 +6,16 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         toolbarHeight: 90,
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
-            border: Border.all(color: const Color(0xFF47309B), width: 2),
+            border: Border.all(color: primaryColor, width: 2),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
@@ -24,10 +25,10 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          child: const Text(
+          child: Text(
             "JOURNAL",
             style: TextStyle(
-              color: Color(0xFF47309B),
+              color: primaryColor,
               fontSize: 18,
               fontWeight: FontWeight.bold,
               letterSpacing: 3.0,
@@ -44,9 +45,7 @@ class WelcomeScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 71, 48, 155),
-              ),
+              decoration: BoxDecoration(color: primaryColor),
               child: const Text(
                 "Günlük Geçmişi",
                 style: TextStyle(
@@ -74,7 +73,7 @@ class WelcomeScreen extends StatelessWidget {
                 fontSize: 32,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.5,
-                color: const Color(0xFF47309B),
+                color: primaryColor,
                 shadows: [
                   Shadow(
                     color: Colors.black.withValues(alpha: 0.15),
@@ -88,15 +87,13 @@ class WelcomeScreen extends StatelessWidget {
 
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const JournalWritingScreen(),
-                  ),
-                );
+                  '/write',
+                ); //rota adıyla geçiş yapıyoruz
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF47309B),
+                backgroundColor: primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
