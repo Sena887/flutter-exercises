@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'journal_writing_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

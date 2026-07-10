@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'analysis_result_screen.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   const JournalWritingScreen({super.key});
@@ -96,11 +95,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                 // Tarih Satırı
                 Row(
                   children: [
-                    const Icon(
-                      Icons.calendar_today,
-                      color: Color(0xFF47309B),
-                      size: 18,
-                    ),
+                    Icon(Icons.calendar_today, color: primaryColor, size: 18),
                     const SizedBox(width: 8),
                     Text(
                       "Tarih: ${now.day}.${now.month}.${now.year}",
@@ -145,7 +140,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                 // Metin giriş alanı
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(16.0),
                     border: Border.all(
                       color: primaryColor.withValues(alpha: 0.15),

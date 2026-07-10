@@ -6,7 +6,9 @@ class AnalysisResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final journalText = ModalRoute.of(context)!.settings.arguments as String;
+    final journalText =
+        ModalRoute.of(context)?.settings.arguments as String? ?? "";
+
     final primaryColor = Theme.of(context).colorScheme.primary;
     return Scaffold(
       appBar: AppBar(title: const Text("Analiz Sonucu")),
