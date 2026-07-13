@@ -15,3 +15,39 @@ class AppTheme {
     );
   }
 }
+
+class MoodTheme {
+  static Color getColor(String mood) {
+    switch (mood) {
+      case 'Mutlu':
+        return const Color(0xFFFFB300);
+      case 'Üzgün':
+        return const Color(0xFF1E88E5);
+      case 'Stresli':
+        return const Color(0xFF7E57C2);
+      case 'Öfkeli':
+        return const Color(0xFFE53935);
+      case 'Endişeli':
+        return const Color(0xFF00897B);
+      default:
+        return const Color(0xFF43A047);
+    }
+  }
+
+  static IconData getIcon(String mood) {
+    switch (mood) {
+      case 'Mutlu':
+        return Icons.sentiment_very_satisfied_rounded;
+      case 'Üzgün':
+        return Icons.sentiment_dissatisfied_rounded;
+      case 'Stresli':
+        return Icons.bolt_rounded;
+      case 'Öfkeli':
+        return Icons.sentiment_very_dissatisfied_rounded;
+      case 'Endişeli':
+        return Icons.track_changes_rounded;
+      default:
+        return Icons.spa_rounded;
+    }
+  }
+}
