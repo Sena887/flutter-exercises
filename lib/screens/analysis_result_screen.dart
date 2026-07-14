@@ -24,6 +24,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       if (inComingData is String) {
         _journalText = inComingData;
         _startAnalysis();
+      } else {
+        //geçersiz veri geldiğinde yükleme ekranı kapanır
+        setState(() => _isLoading = false);
       }
       _initialized = true;
     }
@@ -121,7 +124,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
   //Sonuç Ekranı
   Widget _buildResultState(BuildContext context, Color primaryColor) {
-    if (_entry == null) return const SizedBox.shrink();
+    //Gelen veri null ise hata ekranını gösterir
+    if (_entry == null) return const _ErrorView();
 
     final dateStr =
         "${_entry!.date.day}.${_entry!.date.month}.${_entry!.date.year}";
@@ -197,7 +201,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           ),
           const SizedBox(height: 24),
           //Özet Kartı
-          _buildDashboardCard(
+          _DashboardCard(
             title: "Yapay Zeka Özetin",
             icon: Icons.auto_awesome_rounded,
             iconColor: Colors.deepPurple,
@@ -213,7 +217,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const SizedBox(height: 16),
 
           //3)Etiketler Kartı
-          _buildDashboardCard(
+          _DashboardCard(
             title: "Etiketler",
             icon: Icons.local_offer_rounded,
             iconColor: Colors.blue,
@@ -246,7 +250,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const SizedBox(height: 16),
 
           //4)Öneri Kartı
-          _buildDashboardCard(
+          _DashboardCard(
             title: "Bugün İçin Öneriler",
             icon: Icons.lightbulb_circle_rounded,
             iconColor: Colors.orange,
@@ -262,7 +266,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const SizedBox(height: 16),
 
           //5)Günlük Alıntısı
-          _buildDashboardCard(
+          _DashboardCard(
             title: "Günlük Alıntısı",
             icon: Icons.format_quote_rounded,
             iconColor: Colors.grey,
@@ -345,13 +349,23 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       ),
     );
   }
+}
 
-  Widget _buildDashboardCard({
-    required String title,
-    required IconData icon,
-    required Color iconColor,
-    required Widget content,
-  }) {
+class _DashboardCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color iconColor;
+  final Widget content;
+
+  const _DashboardCard({
+    required this.title,
+    required this.icon,
+    required this.iconColor,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
@@ -386,6 +400,57 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           const Divider(height: 24, thickness: 1),
           content,
         ],
+      ),
+    );
+  }
+}
+
+//Hata Ekranı
+class _ErrorView extends StatelessWidget {
+  const _ErrorView();
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              color: Colors.red.shade400,
+              size: 60,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Analiz Başlatılamadı",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Geçersiz veya boş veri nedeniyle analiz gerçekleştirilemedi.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text("Geri Dön"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

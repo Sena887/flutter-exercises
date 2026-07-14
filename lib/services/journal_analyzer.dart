@@ -26,13 +26,13 @@ class JournalAnalyzer {
       mood: 'Mutlu',
       keywords: [
         'mutlu',
-        'keyifli',
+        'keyif',
         'harika',
         'güzel',
         'iyi',
-        'başarılı',
-        'enerjik',
-        'sevinçli',
+        'başar',
+        'enerji',
+        'sevin',
       ],
       summary: 'Bugün genel olarak mutlu ve pozitif hissediyorsun.',
       recommendation:
@@ -41,14 +41,22 @@ class JournalAnalyzer {
     ),
     _MoodTemplate(
       mood: 'Üzgün',
-      keywords: ['üzgün', 'kötü', 'mutsuz', 'hüzünlü', 'duygusal', 'ağlamak'],
+      keywords: [
+        'üzgün',
+        'üzül',
+        'kötü',
+        'mutsuz',
+        'hüzün',
+        'duygusal',
+        'ağla',
+      ],
       summary: 'Bugün biraz hüzünlü ve duygusal hissediyorsun.',
       recommendation: 'Kendine nazik davran, dinlenmeye vakit ayır.',
       tags: ['duygusal', 'düşünceli', 'içsel'],
     ),
     _MoodTemplate(
       mood: 'Stresli',
-      keywords: ['yorgun', 'stresli', 'bitkin', 'endişeli', 'bıkkın'],
+      keywords: ['yorgun', 'yorul', 'stres', 'bitkin', 'endişe', 'bıkkın'],
       summary: 'Bugün biraz olarak stresli ve yorgun hissediyorsun.',
       recommendation:
           'Stresini azaltmak için biraz ara ver ve zihnini rahatlatmayı dene.',
@@ -56,7 +64,7 @@ class JournalAnalyzer {
     ),
     _MoodTemplate(
       mood: 'Öfkeli',
-      keywords: ['sinirli', 'kızgın', 'öfkeli', 'bağırmak', 'tartışmak'],
+      keywords: ['sinir', 'kız', 'öfke', 'bağır', 'tartış'],
       summary: 'Bugün biraz öfkeli ve gergin hissediyorsun.',
       recommendation:
           'Öfkelendiğin olaydan biraz uzaklaşmayı ve bakış açını değiştirmeyi dene.',
@@ -65,12 +73,13 @@ class JournalAnalyzer {
     _MoodTemplate(
       mood: 'Endişeli',
       keywords: [
-        'kaygılı',
-        'endişeli',
+        'kaygı',
+        'endişe',
         'gergin',
-        'kormuş',
-        'panik',
-        'belirsiz',
+        'geril',
+        'kork',
+        'panik'
+            'belirsiz',
       ],
       summary: 'Bugün biraz kaygılı ve endişeli hissediyorsun.',
       recommendation:
@@ -84,18 +93,38 @@ class JournalAnalyzer {
     await Future.delayed(const Duration(milliseconds: 2500));
     final lowerText = text.toLowerCase();
 
-    //her duygu durumunu kontrol eder ve ilk eşleşeni bulmaya çalışır
-    final matchedTemplate = _templates.firstWhere(
-      (template) => template.keywords.any(lowerText.contains),
-      //eşleşme olmazsa ekrana 'Dengeli' duygusunu yazdırır
-      orElse: () => const _MoodTemplate(
-        mood: 'Dengeli',
-        keywords: [],
-        summary: 'Bugün genel olarak dengeli ve sakin hissediyorsun.',
-        recommendation: 'Kendine vakit ayırarak bu dengeyi korumaya çalış.',
-        tags: ['dengeli', 'sakin', 'huzurlu'],
-      ),
-    );
+    _MoodTemplate? bestTemplate;
+    int maxMatches = 0;
+    bool isTie = false;
+
+    //her template için kelimelerle eşleşme sayısını bulur
+    for (final template in _templates) {
+      //şablondaki kelimelerden kaç tanesi kullanıcının günlük yazısında geçiyor
+      final matchesCount = template.keywords
+          .where((keyword) => lowerText.contains(keyword))
+          .length;
+
+      //eğer şablonun eşleşme sayısı şu ana kadarki en yüksek sayıdan fazlaysa
+      if (matchesCount > maxMatches) {
+        maxMatches = matchesCount;
+        bestTemplate = template;
+        isTie = false; //eşitlik bozuldu
+      } else if (matchesCount == maxMatches && matchesCount > 0) {
+        isTie = true; //duygulardan aynı sayıda varsa eşitlik oluşur
+      }
+    }
+
+    /*hiç eşleşme bulunamadıysa "maxmatches=0"  ya da iki farklı duygu 
+    birbirine eşit çıkarsa o zaman dengeli şablonunu gösterir*/
+    final matchedTemplate = (bestTemplate == null || isTie)
+        ? const _MoodTemplate(
+            mood: 'Dengeli',
+            keywords: [],
+            summary: 'Bugün genel olarak dengeli ve sakin hissediyorsun.',
+            recommendation: 'Kendine vakit ayırarak bu dengeyi korumaya çalış.',
+            tags: ['dengeli', 'sakin', 'huzurlu'],
+          )
+        : bestTemplate;
 
     return JournalEntry(
       id: DateTime.now().toIso8601String(),
