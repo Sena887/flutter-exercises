@@ -34,9 +34,13 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   String get _cleanedText => _journalController.text.trim();
 
   bool get _isTextValid {
+    //metin içinde en az bir adet harf olup olmadığını kontrol ediyoruz
+    final hasLetter = RegExp(r'\p{L}', unicode: true).hasMatch(_cleanedText);
+
     return _cleanedText.isNotEmpty &&
         _cleanedText.length >= _minCharacters &&
-        _cleanedText.length <= _maxCharacters;
+        _cleanedText.length <= _maxCharacters &&
+        hasLetter; //sadece sayı veya sembol varsa geçersiz sayılır
   }
 
   //analiz etme ve yönlendirme işlemi
@@ -130,6 +134,20 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                     child: Text(
                       "En fazla $_maxCharacters girebilirsiniz",
                       style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                //sadece sayı veya sembol girilmişse uyarı mesajı verir
+                else if (currentLength > 0 &&
+                    !RegExp(r'\p{L}', unicode: true).hasMatch(_cleanedText))
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12.0),
+                    child: Text(
+                      "Günlük yazısı sadece sayı veya sembollerden oluşamaz",
+                      style: TextStyle(
                         color: Colors.red,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
