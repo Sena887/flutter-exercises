@@ -63,17 +63,149 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 400),
-        child: _isLoading
-            ? _buildLoadingState(primaryColor)
-            : _buildResultState(context, primaryColor),
+        child: _AnalysisStateSwitcher(isLoading: _isLoading, entry: _entry),
       ),
     );
   }
+}
 
-  //Yükleme Ekranı
-  Widget _buildLoadingState(Color primaryColor) {
+class _DashboardCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color iconColor;
+  final Widget content;
+
+  const _DashboardCard({
+    required this.title,
+    required this.icon,
+    required this.iconColor,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: iconColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 24, thickness: 1),
+          content,
+        ],
+      ),
+    );
+  }
+}
+
+//Hata Ekranı
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     return Center(
-      key: const ValueKey('loading'),
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              color: Colors.red.shade400,
+              size: 60,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Analiz Başlatılamadı",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Geçersiz veya boş veri nedeniyle analiz gerçekleştirilemedi.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text("Geri Dön"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AnalysisStateSwitcher extends StatelessWidget {
+  final bool isLoading;
+  final JournalEntry? entry;
+
+  const _AnalysisStateSwitcher({
+    super.key,
+    required this.isLoading,
+    required this.entry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const _LoadingWidget(key: ValueKey('loading'));
+    }
+
+    if (entry == null) {
+      return const _ErrorView(key: ValueKey('error'));
+    }
+
+    return _ResultWidget(key: const ValueKey('result'), entry: entry!);
+  }
+}
+
+class _LoadingWidget extends StatelessWidget {
+  const _LoadingWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
@@ -121,17 +253,20 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       ),
     );
   }
+}
 
-  //Sonuç Ekranı
-  Widget _buildResultState(BuildContext context, Color primaryColor) {
-    //Gelen veri null ise hata ekranını gösterir
-    if (_entry == null) return const _ErrorView();
+class _ResultWidget extends StatelessWidget {
+  final JournalEntry entry;
 
-    final dateStr =
-        "${_entry!.date.day}.${_entry!.date.month}.${_entry!.date.year}";
+  const _ResultWidget({super.key, required this.entry});
 
-    final moodColor = MoodTheme.getColor(_entry!.mood);
-    final moodIcon = MoodTheme.getIcon(_entry!.mood);
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final dateStr = "${entry.date.day}.${entry.date.month}.${entry.date.year}";
+
+    final moodColor = MoodTheme.getColor(entry.mood);
+    final moodIcon = MoodTheme.getIcon(entry.mood);
 
     return SingleChildScrollView(
       key: const ValueKey('result'),
@@ -186,7 +321,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                         style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                       Text(
-                        _entry!.mood,
+                        entry.mood,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -206,7 +341,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             icon: Icons.auto_awesome_rounded,
             iconColor: Colors.deepPurple,
             content: Text(
-              _entry!.summary,
+              entry.summary,
               style: const TextStyle(
                 fontSize: 15,
                 height: 1.5,
@@ -224,7 +359,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             content: Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children: _entry!.tags.map((tag) {
+              children: entry.tags.map((tag) {
                 return Chip(
                   label: Text(
                     tag,
@@ -234,7 +369,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                       fontSize: 13,
                     ),
                   ),
-                  backgroundColor: Colors.white, //değişiklik
+                  backgroundColor: Colors.white,
                   side: BorderSide(color: primaryColor.withValues(alpha: 0.1)),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -255,7 +390,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             icon: Icons.lightbulb_circle_rounded,
             iconColor: Colors.orange,
             content: Text(
-              _entry!.recommendation,
+              entry.recommendation,
               style: const TextStyle(
                 fontSize: 15,
                 height: 1.5,
@@ -281,7 +416,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 ),
               ),
               child: Text(
-                '"${_entry!.content}"',
+                '"${entry.content}"',
                 style: TextStyle(
                   fontSize: 14,
                   fontStyle: FontStyle.italic,
@@ -346,111 +481,6 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           ),
           const SizedBox(height: 16),
         ],
-      ),
-    );
-  }
-}
-
-class _DashboardCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Color iconColor;
-  final Widget content;
-
-  const _DashboardCard({
-    required this.title,
-    required this.icon,
-    required this.iconColor,
-    required this.content,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(color: Colors.grey.shade100, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: iconColor, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 24, thickness: 1),
-          content,
-        ],
-      ),
-    );
-  }
-}
-
-//Hata Ekranı
-class _ErrorView extends StatelessWidget {
-  const _ErrorView();
-
-  @override
-  Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline_rounded,
-              color: Colors.red.shade400,
-              size: 60,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "Analiz Başlatılamadı",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Geçersiz veya boş veri nedeniyle analiz gerçekleştirilemedi.",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.arrow_back),
-              label: const Text("Geri Dön"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
