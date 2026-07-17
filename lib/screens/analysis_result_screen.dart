@@ -50,9 +50,7 @@ class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
           _isLoading = false;
         });
         //otomatik olarak geçmiş listesine ekle
-        if (resultEntry != null) {
-          ref.read(journalProvider.notifier).addEntry(resultEntry);
-        }
+        ref.read(journalProvider.notifier).addEntry(resultEntry);
       }
     });
   }

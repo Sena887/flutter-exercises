@@ -1,3 +1,6 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/journal_provider.dart';
+import '../widgets/history_item.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -40,23 +43,22 @@ class WelcomeScreen extends StatelessWidget {
       ),
 
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
             DrawerHeader(
+              margin: EdgeInsets.zero,
               decoration: BoxDecoration(color: primaryColor),
-              child: const Text(
-                "Günlük Geçmişi",
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Color.fromARGB(214, 255, 255, 255),
+              child: const Center(
+                child: Text(
+                  "Günlük Geçmişi",
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Color.fromARGB(214, 255, 255, 255),
+                  ),
                 ),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.history),
-              title: Text("Geçmiş Günlük Kayıtları(Yakında)"),
-            ),
+            const Expanded(child: _HistoryList()),
           ],
         ),
       ),
@@ -111,6 +113,37 @@ class WelcomeScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _HistoryList extends ConsumerWidget {
+  const _HistoryList();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(journalProvider);
+
+    if (entries.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            "Henüz kaydedilmiş günlük bulunmuyor.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: entries.length,
+      itemBuilder: (context, index) {
+        //her bir günlük kaydını HistoryItem widget'ına gönderir.
+        return HistoryItem(entry: entries[index]);
+      },
     );
   }
 }
