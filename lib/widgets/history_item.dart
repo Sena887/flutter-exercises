@@ -57,6 +57,7 @@ class HistoryItem extends StatelessWidget {
           color: Colors.grey,
         ),
         onTap: () {
+          Navigator.pop(context);
           Navigator.pushNamed(context, '/result', arguments: entry);
         },
       ),
