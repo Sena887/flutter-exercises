@@ -1,16 +1,19 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/journal_provider.dart';
 import 'package:flutter/material.dart';
 import '../models/journal_entry.dart';
 import '../services/journal_analyzer.dart';
 import '../theme/app_theme.dart';
 
-class AnalysisResultScreen extends StatefulWidget {
+class AnalysisResultScreen extends ConsumerStatefulWidget {
   const AnalysisResultScreen({super.key});
 
   @override
-  State<AnalysisResultScreen> createState() => _AnalysisResultScreenState();
+  ConsumerState<AnalysisResultScreen> createState() =>
+      _AnalysisResultScreenState();
 }
 
-class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
+class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
   bool _isLoading = true;
   String _journalText = '';
   JournalEntry? _entry;
@@ -24,6 +27,10 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       if (inComingData is String) {
         _journalText = inComingData;
         _startAnalysis();
+        //geçmiş günlük kaydıysa doğrudan göster
+      } else if (inComingData is JournalEntry) {
+        _entry = inComingData;
+        _isLoading = false;
       } else {
         //geçersiz veri geldiğinde yükleme ekranı kapanır
         setState(() => _isLoading = false);
@@ -42,6 +49,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           _entry = resultEntry;
           _isLoading = false;
         });
+        //otomatik olarak geçmiş listesine ekle
+        ref.read(journalProvider.notifier).addEntry(resultEntry);
       }
     });
   }
@@ -178,11 +187,7 @@ class _AnalysisStateSwitcher extends StatelessWidget {
   final bool isLoading;
   final JournalEntry? entry;
 
-  const _AnalysisStateSwitcher({
-    super.key,
-    required this.isLoading,
-    required this.entry,
-  });
+  const _AnalysisStateSwitcher({required this.isLoading, required this.entry});
 
   @override
   Widget build(BuildContext context) {
