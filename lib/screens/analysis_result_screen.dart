@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/journal_entry.dart';
 import '../services/journal_analyzer.dart';
 import '../theme/app_theme.dart';
+import '../routes/app_routes.dart';
 
 class AnalysisResultScreen extends ConsumerStatefulWidget {
   const AnalysisResultScreen({super.key});
@@ -436,7 +437,10 @@ class _ResultWidget extends StatelessWidget {
           //6)Aksiyon Butonları
           ElevatedButton(
             onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName('/'));
+              Navigator.popUntil(
+                context,
+                ModalRoute.withName(AppRoutes.welcome),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../routes/app_routes.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   const JournalWritingScreen({super.key});
@@ -47,7 +48,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   void _save() {
     Navigator.pushNamed(
       context,
-      '/result',
+      AppRoutes.result,
       arguments: _cleanedText,
     ); //rota adıyla geçiş yapıyoruz
   }

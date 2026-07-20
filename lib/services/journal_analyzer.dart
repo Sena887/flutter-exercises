@@ -28,9 +28,9 @@ class JournalAnalyzer {
         'mutlu',
         'keyif',
         'harika',
-        'güzel',
+        'guzel',
         'iyi',
-        'başar',
+        'basar',
         'enerji',
         'sevin',
       ],
@@ -42,13 +42,13 @@ class JournalAnalyzer {
     _MoodTemplate(
       mood: 'Üzgün',
       keywords: [
-        'üzgün',
-        'üzül',
-        'kötü',
+        'uzgun',
+        'uzul',
+        'kotu',
         'mutsuz',
-        'hüzün',
+        'huzun',
         'duygusal',
-        'ağla',
+        'agla',
       ],
       summary: 'Bugün biraz hüzünlü ve duygusal hissediyorsun.',
       recommendation: 'Kendine nazik davran, dinlenmeye vakit ayır.',
@@ -56,7 +56,7 @@ class JournalAnalyzer {
     ),
     _MoodTemplate(
       mood: 'Stresli',
-      keywords: ['yorgun', 'yorul', 'stres', 'bitkin', 'endişe', 'bıkkın'],
+      keywords: ['yorgun', 'yorul', 'stres', 'bitkin', 'bikkin'],
       summary: 'Bugün biraz olarak stresli ve yorgun hissediyorsun.',
       recommendation:
           'Stresini azaltmak için biraz ara ver ve zihnini rahatlatmayı dene.',
@@ -64,7 +64,7 @@ class JournalAnalyzer {
     ),
     _MoodTemplate(
       mood: 'Öfkeli',
-      keywords: ['sinir', 'kız', 'öfke', 'bağır', 'tartış'],
+      keywords: ['sinir', 'kiz', 'ofke', 'bagir', 'tartis'],
       summary: 'Bugün biraz öfkeli ve gergin hissediyorsun.',
       recommendation:
           'Öfkelendiğin olaydan biraz uzaklaşmayı ve bakış açını değiştirmeyi dene.',
@@ -73,8 +73,8 @@ class JournalAnalyzer {
     _MoodTemplate(
       mood: 'Endişeli',
       keywords: [
-        'kaygı',
-        'endişe',
+        'kaygi',
+        'endise',
         'gergin',
         'geril',
         'kork',
@@ -88,10 +88,22 @@ class JournalAnalyzer {
     ),
   ];
 
+  //kullanıcı türkçe karakter kullanmasa bile hangi duyguda olduğu anlaşılacak
+  static String _normalize(String text) {
+    return text
+        .toLowerCase()
+        .replaceAll('ı', 'i')
+        .replaceAll('ğ', 'g')
+        .replaceAll('ü', 'u')
+        .replaceAll('ş', 's')
+        .replaceAll('ö', 'o')
+        .replaceAll('ç', 'c');
+  }
+
   static Future<JournalEntry> analyze(String text) async {
     //gecikme süresi
     await Future.delayed(const Duration(milliseconds: 2500));
-    final lowerText = text.toLowerCase();
+    final normalizedText = _normalize(text);
 
     _MoodTemplate? bestTemplate;
     int maxMatches = 0;
@@ -100,9 +112,14 @@ class JournalAnalyzer {
     //her template için kelimelerle eşleşme sayısını bulur
     for (final template in _templates) {
       //şablondaki kelimelerden kaç tanesi kullanıcının günlük yazısında geçiyor
-      final matchesCount = template.keywords
-          .where((keyword) => lowerText.contains(keyword))
-          .length;
+      final matchesCount = template.keywords.where((keyword) {
+        if (keyword == 'iyi') {
+          return normalizedText
+              .split(RegExp(r'[\s.,!?]+'))
+              .any((word) => word.startsWith('iyi'));
+        }
+        return normalizedText.contains(keyword);
+      }).length;
 
       //eğer şablonun eşleşme sayısı şu ana kadarki en yüksek sayıdan fazlaysa
       if (matchesCount > maxMatches) {

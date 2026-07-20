@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/journal_provider.dart';
 import '../widgets/history_item.dart';
 import 'package:flutter/material.dart';
+import '../routes/app_routes.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -59,6 +60,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ),
             const Expanded(child: _HistoryList()),
+            const _ClearAllButton(),
           ],
         ),
       ),
@@ -90,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  '/write',
+                  AppRoutes.write,
                 ); //rota adıyla geçiş yapıyoruz
               },
               style: ElevatedButton.styleFrom(
@@ -144,6 +146,82 @@ class _HistoryList extends ConsumerWidget {
         //her bir günlük kaydını HistoryItem widget'ına gönderir.
         return HistoryItem(entry: entries[index]);
       },
+    );
+  }
+}
+
+class _ClearAllButton extends ConsumerWidget {
+  const _ClearAllButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(journalProvider);
+
+    if (entries.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: OutlinedButton.icon(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Tüm Geçmişi Sil"),
+              content: const Text(
+                "Tüm geçmişi silmek istediğinize emin misiniz? Bu işlem geri alınamaz!",
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Vazgeç"),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context); //1. onay kutusunu kapat
+                    Navigator.pop(context); // Drawer'ı kapat
+
+                    await ref.read(journalProvider.notifier).clearAll();
+
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("Başarılı"),
+                          content: const Text(
+                            "Tüm günlük geçmişi başarıyla temizlendi.",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("Tamam"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    "Tümünü Sil",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+        icon: const Icon(Icons.delete_forever_rounded, color: Colors.red),
+        label: const Text(
+          "Tümünü Temizle",
+          style: TextStyle(color: Colors.red),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.red),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
     );
   }
 }
