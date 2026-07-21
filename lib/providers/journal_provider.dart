@@ -63,6 +63,19 @@ class JournalHistoryNotifier extends Notifier<List<JournalEntry>> {
     }
     return isSaved;
   }
+
+  Future<bool> updateEntry(JournalEntry entry) async {
+    final previousState = state;
+    state = state.map((item) => item.id == entry.id ? entry : item).toList();
+
+    final isSaved = await _repository.saveJournals(state);
+
+    if (!isSaved) {
+      state = previousState;
+      debugPrint("Günlük güncellenemediği için işlem geri alındı.");
+    }
+    return isSaved;
+  }
 }
 
 final journalProvider =

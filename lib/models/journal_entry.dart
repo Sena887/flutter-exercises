@@ -6,6 +6,7 @@ class JournalEntry {
   final String summary;
   final String recommendation;
   final List<String> tags;
+  final bool isEdited;
 
   const JournalEntry({
     required this.id,
@@ -15,8 +16,32 @@ class JournalEntry {
     required this.summary,
     required this.recommendation,
     required this.tags,
+    this.isEdited = false,
     //sözlük - map
   });
+
+  JournalEntry copyWith({
+    String? id,
+    String? content,
+    DateTime? date,
+    String? mood,
+    String? summary,
+    String? recommendation,
+    List<String>? tags,
+    bool? isEdited,
+  }) {
+    return JournalEntry(
+      id: id ?? this.id,
+      content: content ?? this.content,
+      date: date ?? this.date,
+      mood: mood ?? this.mood,
+      summary: summary ?? this.summary,
+      recommendation: recommendation ?? this.recommendation,
+      tags: tags ?? this.tags,
+      isEdited: isEdited ?? this.isEdited,
+    );
+  }
+
   //JSON'a çevirmek için nesneyi Map yapısına dönüştürdük
   Map<String, dynamic> toMap() {
     return {
@@ -27,6 +52,7 @@ class JournalEntry {
       'summary': summary,
       'recommendation': recommendation,
       'tags': tags,
+      'isEdited': isEdited,
     };
   }
 
@@ -42,6 +68,7 @@ class JournalEntry {
       summary: map['summary'] as String? ?? '',
       recommendation: map['recommendation'] as String? ?? '',
       tags: List<String>.from(map['tags'] ?? []),
+      isEdited: map['isEdited'] as bool? ?? false,
     );
   }
 }

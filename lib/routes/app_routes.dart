@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/welcome_screen.dart';
-import '../screens/journal_writing_screen.dart';
-import '../screens/analysis_result_screen.dart';
-import '../screens/history_screen.dart';
+import '../screens/screens.dart';
 
 class AppRoutes {
   static const String welcome = '/';

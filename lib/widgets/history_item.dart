@@ -4,6 +4,7 @@ import '../models/journal_entry.dart';
 import '../theme/app_theme.dart';
 import '../providers/journal_provider.dart';
 import '../routes/app_routes.dart';
+import 'success_dialog.dart';
 
 class HistoryItem extends ConsumerWidget {
   final JournalEntry entry;
@@ -31,9 +32,11 @@ class HistoryItem extends ConsumerWidget {
       child: Stack(
         children: [
           ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 8,
+            contentPadding: const EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 26,
+              bottom: 8,
             ),
             leading: CircleAvatar(
               radius: 22,
@@ -69,7 +72,60 @@ class HistoryItem extends ConsumerWidget {
             },
           ),
           Positioned(
-            top: 8,
+            top: 4,
+            left: 12,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                PopupMenuButton<String>(
+                  icon: const Icon(
+                    Icons.more_horiz_rounded,
+                    color: Colors.grey,
+                    size: 18,
+                  ),
+                  padding: EdgeInsets.all(4),
+                  constraints: const BoxConstraints(),
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.write,
+                        arguments: entry,
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.edit_rounded,
+                            size: 16,
+                            color: Colors.blue,
+                          ),
+                          SizedBox(width: 8),
+                          Text("Düzenle"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (entry.isEdited) ...[
+                  //(...) spread operatörü
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.access_time_rounded,
+                    color: Colors.orangeAccent,
+                    size: 14,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Positioned(
+            top: 4,
             right: 8,
             child: IconButton(
               icon: const Icon(
@@ -118,30 +174,13 @@ class _DeleteConfirmDialog extends ConsumerWidget {
             if (context.mounted) {
               showDialog(
                 context: context,
-                builder: (context) => const _DeleteSuccessDialog(),
+                builder: (context) => const SuccessDialog(
+                  message: "Günlük kaydı başarıyla silindi.",
+                ),
               );
             }
           },
           child: const Text("Sil", style: TextStyle(color: Colors.red)),
-        ),
-      ],
-    );
-  }
-}
-
-//Tekli silme başarılı penceresi
-class _DeleteSuccessDialog extends StatelessWidget {
-  const _DeleteSuccessDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Başarılı"),
-      content: const Text("Günlük kaydı başarıyla silindi."),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Tamam"),
         ),
       ],
     );

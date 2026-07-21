@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/journal_provider.dart';
-import '../widgets/history_item.dart';
+import '../widgets/widgets.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
@@ -126,30 +126,13 @@ class _ConfirmClearDialog extends ConsumerWidget {
             if (context.mounted) {
               showDialog(
                 context: context,
-                builder: (context) => const _SuccessDialog(),
+                builder: (context) => const SuccessDialog(
+                  message: "Tüm günlük geçmişi başarıyla temizlendi.",
+                ),
               );
             }
           },
           child: const Text("Tümünü Sil", style: TextStyle(color: Colors.red)),
-        ),
-      ],
-    );
-  }
-}
-
-//Başarılı Penceresi
-class _SuccessDialog extends StatelessWidget {
-  const _SuccessDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Başarılı"),
-      content: const Text("Tüm günlük geçmişi başarıyla temizlendi."),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Tamam"),
         ),
       ],
     );
