@@ -65,7 +65,6 @@ class HistoryItem extends ConsumerWidget {
               color: Colors.grey,
             ),
             onTap: () {
-              Navigator.pop(context);
               Navigator.pushNamed(context, AppRoutes.result, arguments: entry);
             },
           ),
