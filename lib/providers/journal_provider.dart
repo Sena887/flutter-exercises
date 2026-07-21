@@ -38,15 +38,30 @@ class JournalHistoryNotifier extends Notifier<List<JournalEntry>> {
   }
 
   //tek bir günlüğk kaydını siler
-  Future<void> deleteEntry(String id) async {
+  Future<bool> deleteEntry(String id) async {
+    final previousState = state;
     state = state.where((item) => item.id != id).toList();
-    await _repository.saveJournals(state);
+
+    final isSaved = await _repository.saveJournals(state);
+
+    if (!isSaved) {
+      state = previousState;
+      debugPrint("Günlük veritabanından silinemediği için işlem geri alındı");
+    }
+    return isSaved;
   }
 
   //tüm günlük kayıtlarını siler
-  Future<void> clearAll() async {
+  Future<bool> clearAll() async {
+    final previousState = state;
     state = [];
-    await _repository.saveJournals(state);
+    final isSaved = await _repository.saveJournals(state);
+
+    if (!isSaved) {
+      state = previousState;
+      debugPrint("Günlük veritabanı temizlenemediği için işlem geri alındı.");
+    }
+    return isSaved;
   }
 }
 
