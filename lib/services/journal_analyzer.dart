@@ -28,9 +28,9 @@ class JournalAnalyzer {
         'mutlu',
         'keyif',
         'harika',
-        'guzel',
+        'güzel',
         'iyi',
-        'basar',
+        'başar',
         'enerji',
         'sevin',
       ],
@@ -42,13 +42,13 @@ class JournalAnalyzer {
     _MoodTemplate(
       mood: 'Üzgün',
       keywords: [
-        'uzgun',
-        'uzul',
-        'kotu',
+        'üzgün',
+        'üzül',
+        'kötü',
         'mutsuz',
-        'huzun',
+        'hüzün',
         'duygusal',
-        'agla',
+        'ağla',
       ],
       summary: 'Bugün biraz hüzünlü ve duygusal hissediyorsun.',
       recommendation: 'Kendine nazik davran, dinlenmeye vakit ayır.',
@@ -56,7 +56,7 @@ class JournalAnalyzer {
     ),
     _MoodTemplate(
       mood: 'Stresli',
-      keywords: ['yorgun', 'yorul', 'stres', 'bitkin', 'bikkin'],
+      keywords: ['yorgun', 'yorul', 'stres', 'bitkin', 'bıkkın'],
       summary: 'Bugün biraz olarak stresli ve yorgun hissediyorsun.',
       recommendation:
           'Stresini azaltmak için biraz ara ver ve zihnini rahatlatmayı dene.',
@@ -64,7 +64,7 @@ class JournalAnalyzer {
     ),
     _MoodTemplate(
       mood: 'Öfkeli',
-      keywords: ['sinir', 'kiz', 'ofke', 'bagir', 'tartis'],
+      keywords: ['sinir', 'kız', 'öfke', 'bağır', 'tartış'],
       summary: 'Bugün biraz öfkeli ve gergin hissediyorsun.',
       recommendation:
           'Öfkelendiğin olaydan biraz uzaklaşmayı ve bakış açını değiştirmeyi dene.',
@@ -73,13 +73,13 @@ class JournalAnalyzer {
     _MoodTemplate(
       mood: 'Endişeli',
       keywords: [
-        'kaygi',
-        'endise',
+        'kaygı',
+        'endişe',
         'gergin',
         'geril',
         'kork',
-        'panik'
-            'belirsiz',
+        'panik',
+        'belirsiz',
       ],
       summary: 'Bugün biraz kaygılı ve endişeli hissediyorsun.',
       recommendation:
@@ -113,12 +113,13 @@ class JournalAnalyzer {
     for (final template in _templates) {
       //şablondaki kelimelerden kaç tanesi kullanıcının günlük yazısında geçiyor
       final matchesCount = template.keywords.where((keyword) {
-        if (keyword == 'iyi') {
+        final normalizedKeyword = _normalize(keyword);
+        if (normalizedKeyword == 'iyi') {
           return normalizedText
               .split(RegExp(r'[\s.,!?]+'))
-              .any((word) => word.startsWith('iyi'));
+              .any((word) => word.startsWith(normalizedKeyword));
         }
-        return normalizedText.contains(keyword);
+        return normalizedText.contains(normalizedKeyword);
       }).length;
 
       //eğer şablonun eşleşme sayısı şu ana kadarki en yüksek sayıdan fazlaysa
