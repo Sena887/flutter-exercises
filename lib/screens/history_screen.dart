@@ -87,9 +87,36 @@ class HistoryScreen extends ConsumerWidget {
                 ),
               ),
             )
-          : ListView.builder(
+          : ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: entries.length,
+              separatorBuilder: (context, index) {
+                final currentEntry = entries[index];
+                final nextEntry = entries[index + 1];
+
+                final currentDate = currentEntry.date;
+                final nextDate = nextEntry.date;
+
+                final isDifferentDay =
+                    currentDate.day != nextDate.day ||
+                    currentDate.month != nextDate.month ||
+                    currentDate.year != nextDate.year;
+
+                if (isDifferentDay) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8.0,
+                    ),
+                    child: Divider(
+                      color: primaryColor.withValues(alpha: 0.15),
+                      thickness: 1.5,
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
               itemBuilder: (context, index) {
                 return HistoryItem(entry: entries[index]);
               },
