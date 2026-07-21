@@ -82,55 +82,68 @@ class HistoryItem extends ConsumerWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text("Günlüğü Sil"),
-                    content: const Text(
-                      "Bu günlük kaydını silmek istediğinize emin misiniz?",
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("Vazgeç"),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          Navigator.pop(context);
-
-                          await ref
-                              .read(journalProvider.notifier)
-                              .deleteEntry(entry.id);
-
-                          if (context.mounted) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text("Başarılı"),
-                                content: const Text(
-                                  "Günlük kaydı başarıyla silindi.",
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text("Tamam"),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text(
-                          "Sil",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
+                  builder: (context) => _DeleteConfirmDialog(entryId: entry.id),
                 );
               },
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+//Tekli günlük silme
+class _DeleteConfirmDialog extends ConsumerWidget {
+  final String entryId;
+
+  const _DeleteConfirmDialog({required this.entryId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      title: const Text("Günlüğü Sil"),
+      content: const Text(
+        "Bu günlük kaydını silmek istediğinize emin misiniz?",
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Vazgeç"),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            await ref.read(journalProvider.notifier).deleteEntry(entryId);
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (context) => const _DeleteSuccessDialog(),
+              );
+            }
+          },
+          child: const Text("Sil", style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    );
+  }
+}
+
+//Tekli silme başarılı penceresi
+class _DeleteSuccessDialog extends StatelessWidget {
+  const _DeleteSuccessDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Başarılı"),
+      content: const Text("Günlük kaydı başarıyla silindi."),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Tamam"),
+        ),
+      ],
     );
   }
 }
