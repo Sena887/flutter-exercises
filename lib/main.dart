@@ -1,12 +1,38 @@
+import 'routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'screens/welcome_screen.dart';
-import 'screens/journal_writing_screen.dart';
-import 'screens/analysis_result_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/app_theme.dart';
+import 'providers/journal_provider.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+void main() async {
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    runApp(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  } catch (e, stackTrace) {
+    debugPrint("Uygulama başlatılamadı: $e");
+    debugPrint("Stacktrace: $stackTrace");
+
+    runApp(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Text("Uygulama başlatılamadı, lütfen tekrar deneyin."),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -17,12 +43,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const WelcomeScreen(),
-        '/write': (context) => const JournalWritingScreen(),
-        '/result': (context) => const AnalysisResultScreen(),
-      },
+      initialRoute: AppRoutes.welcome,
+      routes: AppRoutes.routes,
     );
   }
 }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../models/journal_entry.dart';
 import '../services/journal_analyzer.dart';
 import '../theme/app_theme.dart';
+import '../routes/app_routes.dart';
+import 'journal_writing_screen.dart';
 
 class AnalysisResultScreen extends ConsumerStatefulWidget {
   const AnalysisResultScreen({super.key});
@@ -17,6 +19,7 @@ class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
   bool _isLoading = true;
   String _journalText = '';
   JournalEntry? _entry;
+  JournalEntry? _editingEntry;
   bool _initialized = false;
 
   @override
@@ -28,6 +31,10 @@ class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
         _journalText = inComingData;
         _startAnalysis();
         //geçmiş günlük kaydıysa doğrudan göster
+      } else if (inComingData is AnalysisArguments) {
+        _journalText = inComingData.text;
+        _editingEntry = inComingData.editEntry;
+        _startAnalysis();
       } else if (inComingData is JournalEntry) {
         _entry = inComingData;
         _isLoading = false;
@@ -40,17 +47,29 @@ class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
   }
 
   void _startAnalysis() {
-    JournalAnalyzer.analyze(_journalText).then((resultEntry) {
+    JournalAnalyzer.analyze(_journalText).then((resultEntry) async {
       if (mounted) {
         /*memory leak önleyicisi, kullanıcı yüklenme ekranı bitmeden geri sayfadan çıkarsa
       uygulama olmayan ekranı güncellemeye çalışır ve hata verir. Bu komutla birlikte eğer sadece ekran açıksa
       arayüzü günceller. Bu sayede programın çökmesini engeller. */
+        final finalEntry = _editingEntry != null
+            ? resultEntry.copyWith(
+                id: _editingEntry!.id,
+                date: _editingEntry!.date,
+                isEdited: true,
+              )
+            : resultEntry;
+
         setState(() {
-          _entry = resultEntry;
+          _entry = finalEntry;
           _isLoading = false;
         });
-        //otomatik olarak geçmiş listesine ekle
-        ref.read(journalProvider.notifier).addEntry(resultEntry);
+        if (_editingEntry != null) {
+          await ref.read(journalProvider.notifier).updateEntry(finalEntry);
+        } else {
+          //otomatik olarak geçmiş listesine ekle
+          await ref.read(journalProvider.notifier).addEntry(finalEntry);
+        }
       }
     });
   }
@@ -436,7 +455,10 @@ class _ResultWidget extends StatelessWidget {
           //6)Aksiyon Butonları
           ElevatedButton(
             onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName('/'));
+              Navigator.popUntil(
+                context,
+                ModalRoute.withName(AppRoutes.welcome),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,

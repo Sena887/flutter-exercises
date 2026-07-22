@@ -1,7 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/journal_provider.dart';
-import '../widgets/history_item.dart';
 import 'package:flutter/material.dart';
+import '../routes/app_routes.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -50,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
               decoration: BoxDecoration(color: primaryColor),
               child: const Center(
                 child: Text(
-                  "Günlük Geçmişi",
+                  "Menü",
                   style: TextStyle(
                     fontSize: 24,
                     color: Color.fromARGB(214, 255, 255, 255),
@@ -58,7 +56,14 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Expanded(child: _HistoryList()),
+            ListTile(
+              leading: const Icon(Icons.history_rounded),
+              title: const Text("Günlük Geçmişi"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, AppRoutes.history);
+              },
+            ),
           ],
         ),
       ),
@@ -90,7 +95,7 @@ class WelcomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  '/write',
+                  AppRoutes.write,
                 ); //rota adıyla geçiş yapıyoruz
               },
               style: ElevatedButton.styleFrom(
@@ -113,37 +118,6 @@ class WelcomeScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _HistoryList extends ConsumerWidget {
-  const _HistoryList();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final entries = ref.watch(journalProvider);
-
-    if (entries.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(
-            "Henüz kaydedilmiş günlük bulunmuyor.",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey, fontSize: 16),
-          ),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: entries.length,
-      itemBuilder: (context, index) {
-        //her bir günlük kaydını HistoryItem widget'ına gönderir.
-        return HistoryItem(entry: entries[index]);
-      },
     );
   }
 }

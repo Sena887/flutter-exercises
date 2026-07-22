@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../routes/app_routes.dart';
+import '../models/journal_entry.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   const JournalWritingScreen({super.key});
@@ -11,6 +13,9 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   final TextEditingController _journalController =
       TextEditingController(); //yazılan metni kaydetmek için
 
+  JournalEntry? _existingEntry;
+  bool _initialized = false;
+
   late final DateTime now; //late: değer sonradan atanacak
 
   static const int _minCharacters = 10; //girilecek en az karakter sayısı
@@ -20,6 +25,24 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   void initState() {
     super.initState();
     now = DateTime.now();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      final arg = ModalRoute.of(context)?.settings.arguments;
+      if (arg is JournalEntry) {
+        _existingEntry = arg;
+        _journalController.text = arg.content;
+
+        //imleci yazının en sonuna taşı
+        _journalController.selection = TextSelection.fromPosition(
+          TextPosition(offset: arg.content.length),
+        );
+      }
+      _initialized = true;
+    }
   }
 
   @override
@@ -47,9 +70,12 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   void _save() {
     Navigator.pushNamed(
       context,
-      '/result',
-      arguments: _cleanedText,
-    ); //rota adıyla geçiş yapıyoruz
+      AppRoutes.result,
+      arguments: AnalysisArguments(
+        text: _cleanedText,
+        editEntry: _existingEntry,
+      ),
+    );
   }
 
   @override
@@ -61,7 +87,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Yeni Günlük Yaz",
+          _existingEntry != null ? "Günlüğü Düzenle" : "Yeni Günlük Yaz",
           style: TextStyle(
             color: primaryColor,
             fontWeight: FontWeight.bold,
@@ -234,4 +260,11 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
       ),
     );
   }
+}
+
+//analiz ekranına parametre taşımak için kullanılan type safety
+class AnalysisArguments {
+  final String text;
+  final JournalEntry? editEntry;
+  const AnalysisArguments({required this.text, this.editEntry});
 }
