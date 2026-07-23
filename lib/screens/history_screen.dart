@@ -3,11 +3,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/journal_provider.dart';
 import '../widgets/widgets.dart';
 
-class HistoryScreen extends ConsumerWidget {
+class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final entries = ref.watch(journalProvider);
     final primaryColor = Theme.of(context).colorScheme.primary;
 
@@ -40,28 +59,36 @@ class HistoryScreen extends ConsumerWidget {
       ),
       body: entries.isEmpty
           ? const _EmptyHistoryView()
-          : ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: entries.length,
-              separatorBuilder: (context, index) {
-                final currentEntry = entries[index];
-                final nextEntry = entries[index + 1];
+          : RawScrollbar(
+              controller: _scrollController,
+              thumbColor: primaryColor.withValues(alpha: 0.5),
+              thickness: 5,
+              radius: const Radius.circular(10),
+              interactive: true,
+              child: ListView.separated(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemCount: entries.length,
+                separatorBuilder: (context, index) {
+                  final currentEntry = entries[index];
+                  final nextEntry = entries[index + 1];
 
-                final currentDate = currentEntry.date;
-                final nextDate = nextEntry.date;
+                  final currentDate = currentEntry.date;
+                  final nextDate = nextEntry.date;
 
-                final isDifferentDay =
-                    currentDate.day != nextDate.day ||
-                    currentDate.month != nextDate.month ||
-                    currentDate.year != nextDate.year;
+                  final isDifferentDay =
+                      currentDate.day != nextDate.day ||
+                      currentDate.month != nextDate.month ||
+                      currentDate.year != nextDate.year;
 
-                return isDifferentDay
-                    ? const _HistoryDivider()
-                    : const SizedBox.shrink();
-              },
-              itemBuilder: (context, index) {
-                return HistoryItem(entry: entries[index]);
-              },
+                  return isDifferentDay
+                      ? const _HistoryDivider()
+                      : const SizedBox.shrink();
+                },
+                itemBuilder: (context, index) {
+                  return HistoryItem(entry: entries[index]);
+                },
+              ),
             ),
     );
   }

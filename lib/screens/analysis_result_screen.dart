@@ -279,235 +279,265 @@ class _LoadingWidget extends StatelessWidget {
   }
 }
 
-class _ResultWidget extends StatelessWidget {
+class _ResultWidget extends StatefulWidget {
   final JournalEntry entry;
 
   const _ResultWidget({super.key, required this.entry});
 
   @override
+  State<_ResultWidget> createState() => _ResultWidgetState();
+}
+
+class _ResultWidgetState extends State<_ResultWidget> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
-    final dateStr = "${entry.date.day}.${entry.date.month}.${entry.date.year}";
+    final dateStr =
+        "${widget.entry.date.day}.${widget.entry.date.month}.${widget.entry.date.year}";
 
-    final moodColor = MoodTheme.getColor(entry.mood);
-    final moodIcon = MoodTheme.getIcon(entry.mood);
+    final moodColor = MoodTheme.getColor(widget.entry.mood);
+    final moodIcon = MoodTheme.getIcon(widget.entry.mood);
 
-    return SingleChildScrollView(
-      key: const ValueKey('result'),
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          //Tarih ve Duygu Kartı
-          Container(
-            padding: const EdgeInsets.all(24.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [moodColor, moodColor.withValues(alpha: 0.85)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(24.0),
-              boxShadow: [
-                BoxShadow(
-                  color: moodColor.withValues(alpha: 0.3),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
+    return RawScrollbar(
+      controller: _scrollController,
+      thumbColor: moodColor.withValues(alpha: 0.5),
+      thickness: 5,
+      radius: const Radius.circular(10),
+      interactive: true,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        key: const ValueKey('result'),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            //Tarih ve Duygu Kartı
+            Container(
+              padding: const EdgeInsets.all(24.0),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [moodColor, moodColor.withValues(alpha: 0.85)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Colors.white24,
-                    shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(24.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: moodColor.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
                   ),
-                  child: Icon(moodIcon, size: 48, color: Colors.white),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        dateStr,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        "Duygu Durumun",
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
-                      ),
-                      Text(
-                        entry.mood,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          //Özet Kartı
-          _DashboardCard(
-            title: "Yapay Zeka Özetin",
-            icon: Icons.auto_awesome_rounded,
-            iconColor: Colors.deepPurple,
-            content: Text(
-              entry.summary,
-              style: const TextStyle(
-                fontSize: 15,
-                height: 1.5,
-                color: Colors.black87,
+                ],
               ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          //3)Etiketler Kartı
-          _DashboardCard(
-            title: "Etiketler",
-            icon: Icons.local_offer_rounded,
-            iconColor: Colors.blue,
-            content: Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: entry.tags.map((tag) {
-                return Chip(
-                  label: Text(
-                    tag,
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(moodIcon, size: 48, color: Colors.white),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          dateStr,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Duygu Durumun",
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                        Text(
+                          widget.entry.mood,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  backgroundColor: Colors.white,
-                  side: BorderSide(color: primaryColor.withValues(alpha: 0.1)),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          //4)Öneri Kartı
-          _DashboardCard(
-            title: "Bugün İçin Öneriler",
-            icon: Icons.lightbulb_circle_rounded,
-            iconColor: Colors.orange,
-            content: Text(
-              entry.recommendation,
-              style: const TextStyle(
-                fontSize: 15,
-                height: 1.5,
-                color: Colors.black87,
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-
-          //5)Günlük Alıntısı
-          _DashboardCard(
-            title: "Günlük Alıntısı",
-            icon: Icons.format_quote_rounded,
-            iconColor: Colors.grey,
-            content: Container(
-              padding: const EdgeInsets.only(left: 12.0),
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(
-                    color: primaryColor.withValues(alpha: 0.3),
-                    width: 4,
-                  ),
-                ),
-              ),
-              child: Text(
-                '"${entry.content}"',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey.shade700,
+            const SizedBox(height: 24),
+            //Özet Kartı
+            _DashboardCard(
+              title: "Yapay Zeka Özetin",
+              icon: Icons.auto_awesome_rounded,
+              iconColor: Colors.deepPurple,
+              content: Text(
+                widget.entry.summary,
+                style: const TextStyle(
+                  fontSize: 15,
                   height: 1.5,
+                  color: Colors.black87,
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 32),
+            const SizedBox(height: 16),
 
-          //6)Aksiyon Butonları
-          ElevatedButton(
-            onPressed: () {
-              Navigator.popUntil(
-                context,
-                ModalRoute.withName(AppRoutes.welcome),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              elevation: 2,
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.home_rounded),
-                SizedBox(width: 8),
-                Text(
-                  "Ana Sayfaya Dön",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: primaryColor,
-              side: BorderSide(color: primaryColor, width: 1.5),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+            //3)Etiketler Kartı
+            _DashboardCard(
+              title: "Etiketler",
+              icon: Icons.local_offer_rounded,
+              iconColor: Colors.blue,
+              content: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: widget.entry.tags.map((tag) {
+                  return Chip(
+                    label: Text(
+                      tag,
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    backgroundColor: Colors.white,
+                    side: BorderSide(
+                      color: primaryColor.withValues(alpha: 0.1),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  );
+                }).toList(),
               ),
             ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.edit_note_rounded),
-                SizedBox(width: 8),
-                Text(
-                  "Yeni Günlük Yaz",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            const SizedBox(height: 16),
+
+            //4)Öneri Kartı
+            _DashboardCard(
+              title: "Bugün İçin Öneriler",
+              icon: Icons.lightbulb_circle_rounded,
+              iconColor: Colors.orange,
+              content: Text(
+                widget.entry.recommendation,
+                style: const TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  color: Colors.black87,
                 ),
-              ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
+            const SizedBox(height: 16),
+
+            //5)Günlük Alıntısı
+            _DashboardCard(
+              title: "Günlük Alıntısı",
+              icon: Icons.format_quote_rounded,
+              iconColor: Colors.grey,
+              content: Container(
+                padding: const EdgeInsets.only(left: 12.0),
+                decoration: BoxDecoration(
+                  border: Border(
+                    left: BorderSide(
+                      color: primaryColor.withValues(alpha: 0.3),
+                      width: 4,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  '"${widget.entry.content}"',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey.shade700,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            //6)Aksiyon Butonları
+            ElevatedButton(
+              onPressed: () {
+                Navigator.popUntil(
+                  context,
+                  ModalRoute.withName(AppRoutes.welcome),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 2,
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.home_rounded),
+                  SizedBox(width: 8),
+                  Text(
+                    "Ana Sayfaya Dön",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: primaryColor,
+                side: BorderSide(color: primaryColor, width: 1.5),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.edit_note_rounded),
+                  SizedBox(width: 8),
+                  Text(
+                    "Yeni Günlük Yaz",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
