@@ -13,12 +13,34 @@ class HistoryItem extends ConsumerWidget {
 
   String _pad(int n) => n.toString().padLeft(2, '0'); //padding
 
+  String _getDayName(int weekday) {
+    switch (weekday) {
+      case DateTime.monday:
+        return 'Pazartesi';
+      case DateTime.tuesday:
+        return 'Salı';
+      case DateTime.wednesday:
+        return 'Çarşamba';
+      case DateTime.thursday:
+        return 'Perşembe';
+      case DateTime.friday:
+        return 'Cuma';
+      case DateTime.saturday:
+        return 'Cumartesi';
+      case DateTime.sunday:
+        return 'Pazar';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final date = entry.date;
 
+    final dayName = _getDayName(date.weekday);
     final formattedDateTime =
-        "${_pad(date.day)}.${_pad(date.month)}.${date.year} - ${_pad(date.hour)}:${_pad(date.minute)}";
+        "${_pad(date.day)}.${_pad(date.month)}.${date.year} $dayName - ${_pad(date.hour)}:${_pad(date.minute)}";
 
     final moodColor = MoodTheme.getColor(entry.mood);
     final moodIcon = MoodTheme.getIcon(entry.mood);
