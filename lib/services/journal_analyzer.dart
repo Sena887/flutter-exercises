@@ -263,7 +263,7 @@ class JournalAnalyzer {
   static Future<JournalEntry> analyze(String text) async {
     try {
       final model = FirebaseAI.googleAI().generativeModel(
-        model: 'gemini-3.1-flash-lite',
+        model: 'gemini-3.5-flash-lite',
         systemInstruction: Content.system(
           "Sen profesyonel bir kişisel günlük analizörüsün. Görevin sadece kullanıcının yazdığı günlük yazısını analiz etmek, özetlemek, duygu durumunu belirlemek ve uygun öneriler ile etiketler üretmektir. "
           "Duygu durumlarını şu kurallara göre belirle:\n"
