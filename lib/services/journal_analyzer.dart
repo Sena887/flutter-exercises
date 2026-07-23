@@ -326,18 +326,12 @@ class JournalAnalyzer {
       if (rawText == null || rawText.isEmpty) {
         throw const FormatException("Gemini'dan boş yanıt döndü.");
       }
-      String cleanedJson = rawText.trim(); //Markdown Temizleme Filtresi
-
-      if (cleanedJson.startsWith('```')) {
-        final lines = cleanedJson.split('\n');
-        if (lines.first.startsWith('```')) {
-          lines.removeAt(0);
-        }
-        if (lines.isNotEmpty && lines.last.startsWith('```')) {
-          lines.removeLast();
-        }
-        cleanedJson = lines.join('\n').trim();
+      final jsonMatch = RegExp(r'\{[\s\S]*\}').firstMatch(rawText);
+      if (jsonMatch == null) {
+        throw const FormatException("Yanıtta gerçek bir JSON bulunamadı.");
       }
+      final String cleanedJson = jsonMatch.group(0)!;
+
       final Map<String, dynamic> data = jsonDecode(cleanedJson);
       if (!data.containsKey('mood') ||
           !data.containsKey('summary') ||
@@ -345,20 +339,24 @@ class JournalAnalyzer {
           !data.containsKey('tags')) {
         throw const FormatException("JSON içinde gerekli alanlar bulunamadı.");
       }
+      final responseMood = data['mood'] as String? ?? 'Dengeli';
+      final isSupportedMood =
+          _templates.any((t) => t.mood == responseMood) ||
+          responseMood == 'Dengeli';
+      final finalMood = isSupportedMood ? responseMood : 'Dengeli';
+
       if (kDebugMode) {
-        debugPrint(
-          "Gemini Analizi Başarılı. Tespit edilen duygu: ${data['mood']}",
-        );
+        debugPrint("Gemini Analizi Başarılı. Tespit edilen duygu: $finalMood");
       }
 
       return JournalEntry(
         id: DateTime.now().toIso8601String(),
         content: text,
         date: DateTime.now(),
-        mood: data['mood'] as String? ?? 'Dengeli',
+        mood: finalMood,
         summary: data['summary'] as String? ?? '',
         recommendation: data['recommendation'] as String? ?? '',
-        tags: List<String>.from(data['tags'] ?? []),
+        tags: (data['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
       );
     } catch (e) {
       if (kDebugMode) {
