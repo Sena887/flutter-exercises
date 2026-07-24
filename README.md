@@ -16,36 +16,43 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-# 📝 Journal AI - Yapay Zeka Destekli Günlük Uygulaması
+# 📝 Journal AI - AI-Powered Journal Application
 
-Journal AI, kullanıcıların günlük yaşantılarını ve duygularını kaleme alırken yapay zekanın gücünden faydalanarak derinlemesine analizler sunan, modern bir **Flutter** mobil uygulamasıdır.
-
----
-
-## 🚀 Özellikler
-- **Yapay Zeka Destekli Analiz (Gemini/Firebase Vertex AI):** Günlük yazılarınızı analiz ederek o günkü baskın duygunuzu (Mutlu, Üzgün, Stresli, Huzurlu, Minnettar vb.) tespit eder.
-- **Destekleyici Özetler ve Tavsiyeler:** Yapay zeka, o günkü ruh halinize göre size destekleyici, motive edici tavsiyeler ve 1-2 cümlelik özetler hazırlar.
-- **Yerel (Çevrimdışı) Analizör (Fallback):** İnternet bağlantınız olmasa dahi, akıllı anahtar kelime eşleştirme algoritması sayesinde duygu durumunuzu çevrimdışı olarak tahmin eder.
-- **Türkçe Karakter Duyarlılığı:** Çevrimdışı analizör, Türkçe karakter yumuşatma (normalizasyon) mantığıyla çalışır (`ş` -> `s`, `ı` -> `i` vb. dönüştürerek hatasız eşleştirme yapar).
-- **Günlük Geçmişi ve Kayıt:** Yazdığınız tüm günlükler yerel veri depolama (SharedPreferences) ile saklanır.
-- **Firebase App Check Güvenliği:** Firebase servisleri ile olan tüm iletişim App Check güvenlik katmanı ile korunur.
+Journal AI is a modern **Flutter** mobile application that leverages the power of Artificial Intelligence to analyze users' thoughts, daily experiences, and emotional states, providing deep psychological insights.
 
 ---
 
-## 🛠️ Kullanılan Teknolojiler
+## 🚀 Features
+- **AI-Powered Emotion Analysis (Gemini/Firebase Vertex AI):** Analyzes journal entries to determine the user's dominant mood (Happy, Sad, Stressed, Peaceful, Grateful, etc.).
+- **Summarization & Personalized Advice:** Generates a 1-2 sentence summary of your day and provides supportive, tailored recommendations based on your current mood.
+- **Offline Fallback Analyzer:** Includes an intelligent keyword-matching algorithm that functions completely offline to estimate your mood in the absence of an internet connection.
+- **Turkish Character Normalization:** The offline fallback analyzer features character normalization (e.g., converting `ş` -> `s`, `ı` -> `i`) to guarantee accurate local matching.
+- **Journal History & Storage:** Persists journal entries locally. Users can view historical logs, review analysis details, or delete previous entries.
+- **Firebase App Check Security:** Secures all interactions between the mobile app and Firebase backends using Firebase App Check.
+
+---
+
+## 🛠️ Tech Stack
 - **Framework:** [Flutter](https://flutter.dev) (Dart)
 - **State Management:** [Riverpod](https://riverpod.dev)
-- **AI/LLM:** Gemini-3.5-Flash-Lite (Firebase Vertex AI SDK aracılığıyla)
+- **AI/LLM:** Gemini-3.5-Flash-Lite (via Firebase Vertex AI SDK)
 - **Local Storage:** SharedPreferences
 
 ---
 
-## ⚙️ Kurulum ve Çalıştırma
+## ⚙️ Installation & Setup
 
-Bu projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin:
+Follow these steps to run the project on your local machine:
 
-1. **Projeyi Klonlayın:**
+### Prerequisites
+- Flutter SDK installed on your system.
+- Firebase CLI and FlutterFire CLI tools installed.
+
+### Setup Steps
+
+1. **Clone the Repository:**
    ```bash
    git clone https://github.com/Sena887/flutter-exercises.git
    cd journal
+
 
