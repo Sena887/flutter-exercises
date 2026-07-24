@@ -50,15 +50,14 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCG54rXSzywfF3OYiXjTokl6N8I_MtCNjQ',
+    apiKey: 'AIzaSyBKJE9FkBRCM5eILjrhsm0ShIsnZ2JhI6c',
     appId: '1:54795876562:android:dbd35db6cf51ecd511d50b',
     messagingSenderId: '54795876562',
     projectId: 'journal-ai-app-df33b',
     storageBucket: 'journal-ai-app-df33b.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAtNAZnWvaFbIwyurI4qkmRLX5dyj9fTE8',
+    apiKey: 'AIzaSyC962JoZc7j1tk4SgtwScJyp5uFhqb-mO4',
     appId: '1:54795876562:ios:ed8a6902c45aaba711d50b',
     messagingSenderId: '54795876562',
     projectId: 'journal-ai-app-df33b',
