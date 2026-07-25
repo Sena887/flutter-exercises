@@ -48,7 +48,8 @@ class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
 
   void _startAnalysis() {
     JournalAnalyzer.analyze(_journalText).then((resultEntry) async {
-      if (mounted) {
+      // Kullanıcı analiz tamamlanmadan geri çıktıysa mükerrer (çift) kayıt eklenmesini önler
+      if (mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
         /*memory leak önleyicisi, kullanıcı yüklenme ekranı bitmeden geri sayfadan çıkarsa
       uygulama olmayan ekranı güncellemeye çalışır ve hata verir. Bu komutla birlikte eğer sadece ekran açıksa
       arayüzü günceller. Bu sayede programın çökmesini engeller. */
